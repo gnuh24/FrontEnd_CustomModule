@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Giày</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .shoeSize, .shoeImage {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Tạo Giày</h1>
+    <form id="shoeForm">
+        <label for="shoeName">Tên giày:</label>
+        <input type="text" id="shoeName" name="shoeName" value="Tên mặc định" required>
+        
+        <label for="color">Màu sắc:</label>
+        <input type="text" id="color" name="color" value="Đỏ" required>
+        
+        <label for="status">Trạng thái:</label>
+        <input type="checkbox" id="status" name="status" checked>
+        
+        <label for="description">Mô tả:</label>
+        <textarea id="description" name="description">Mô tả mặc định</textarea>
+        
+        <label for="priority">Ưu tiên:</label>
+        <input type="checkbox" id="priority" name="priority" checked>
+        
+        <label for="brandId">ID thương hiệu:</label>
+        <input type="number" id="brandId" name="brandId" value="2" required>
+        
+        <label for="shoeTypeId">ID loại giày:</label>
+        <input type="number" id="shoeTypeId" name="shoeTypeId" value="2" required>
+
+        <div id="shoeSizes">
+            <h3>Kích thước giày:</h3>
+            <div class="shoeSize">
+                <label for="size">Kích thước:</label>
+                <input type="number" name="size[]" required>
+                
+                <label for="price">Giá:</label>
+                <input type="number" name="price[]" required>
+            </div>
+        </div>
+        <button type="button" id="addShoeSize">Thêm kích thước giày</button>
+
+        <div id="shoeImages">
+            <h3>Hình ảnh giày:</h3>
+            <div class="shoeImage">
+                <label for="shoeImage">Hình ảnh:</label>
+                <input type="file" name="shoeImage[]" required>
+                
+                <label for="priority">Ưu tiên:</label>
+                <input type="checkbox" name="priority[]">
+            </div>
+        </div>
+        <button type="button" id="addShoeImage">Thêm hình ảnh giày</button>
+
+        <button type="submit">Tạo giày</button>
+        <img src="http://localhost:8080/Event/Banner/0.4844820553083413.1723814297912.png" alt="Ảnh nè">
+        <div>
+            <img src='http://localhost:8080/NewsImage/0.10862236726252716.1726479633289.jpg'> 
+
+        </div>
+    </form>
+
+    <script>
+        // Đợi khi DOM được tải hoàn toàn
+        document.addEventListener('DOMContentLoaded', function () {
+            // Thêm sự kiện cho nút "Thêm kích thước giày"
+            document.getElementById('addShoeSize').addEventListener('click', addShoeSize);
+            // Thêm sự kiện cho nút "Thêm hình ảnh giày"
+            document.getElementById('addShoeImage').addEventListener('click', addShoeImage);
+            // Thêm sự kiện cho form khi submit
+            document.getElementById('shoeForm').addEventListener('submit', createShoe);
+        });
+        
+        // Hàm thêm kích thước giày mới
+        function addShoeSize() {
+            const shoeSizeDiv = document.createElement('div');
+            shoeSizeDiv.classList.add('shoeSize');
+        
+            shoeSizeDiv.innerHTML = `
+                <label for="size">Kích thước:</label>
+                <input type="number" name="size[]" required>
+                
+                <label for="price">Giá:</label>
+                <input type="number" name="price[]" required>
+            `;
+            document.getElementById('shoeSizes').appendChild(shoeSizeDiv);
+        }
+        
+        // Hàm thêm hình ảnh giày mới
+        function addShoeImage() {
+            const shoeImageDiv = document.createElement('div');
+            shoeImageDiv.classList.add('shoeImage');
+        
+            shoeImageDiv.innerHTML = `
+                <label for="shoeImage">Hình ảnh:</label>
+                <input type="file" name="shoeImage[]" required>
+                
+                <label for="priority">Ưu tiên:</label>
+                <input type="checkbox" name="priority[]">
+            `;
+            document.getElementById('shoeImages').appendChild(shoeImageDiv);
+        }
+        
+        // Hàm xử lý sự kiện khi tạo giày
+        async function createShoe(event) {
+            event.preventDefault(); // Ngăn chặn form submit mặc định
+            
+            const form = document.getElementById('shoeForm');
+            const formData = new FormData(form); // Tạo formData từ form
+        
+            // Lấy danh sách kích thước giày và thêm vào formData
+            const shoeSizes = document.querySelectorAll('.shoeSize');
+            shoeSizes.forEach((sizeDiv, index) => {
+                formData.append(`shoeSizes[${index}].size`, sizeDiv.querySelector('input[name="size[]"]').value);
+                formData.append(`shoeSizes[${index}].price`, sizeDiv.querySelector('input[name="price[]"]').value);
+            });
+        
+            // Lấy danh sách hình ảnh giày và thêm vào formData
+            const shoeImages = document.querySelectorAll('.shoeImage');
+            shoeImages.forEach((imageDiv, index) => {
+                formData.append(`shoeImages[${index}].shoeImage`, imageDiv.querySelector('input[name="shoeImage[]"]').files[0]);
+                formData.append(`shoeImages[${index}].priority`, imageDiv.querySelector('input[name="priority[]"]').checked);
+            });
+        
+            try {
+                // Gửi request POST tới API tạo giày
+                const response = await fetch('http://localhost:8080/Shoe', {
+                    method: 'POST',
+                    body: formData
+                });
+        
+                if (response.ok) {
+                    // Nếu thành công, lấy dữ liệu trả về
+                    const result = await response.json();
+                    console.log('Giày đã được tạo thành công:', result);
+                    // Cập nhật giao diện hoặc hiển thị thông báo thành công
+                    displaySuccessMessage('Giày đã được tạo thành công!');
+                    form.reset(); // Đặt lại form
+                    clearDynamicFields(); // Xóa các trường nhập động
+                } else {
+                    // Nếu không thành công, hiển thị lỗi
+                    console.error('Lỗi khi tạo giày:', response.statusText);
+                    displayErrorMessage('Lỗi khi tạo giày: ' + response.statusText);
+                }
+            } catch (error) {
+                // Nếu có lỗi trong quá trình gửi request, hiển thị lỗi
+                console.error('Lỗi khi tạo giày:', error);
+                displayErrorMessage('Lỗi khi tạo giày: ' + error.message);
+            }
+        }
+        
+        // Hàm hiển thị thông báo thành công
+        function displaySuccessMessage(message) {
+            const successMessage = document.createElement('div');
+            successMessage.classList.add('success-message');
+            successMessage.innerText = message;
+            document.body.appendChild(successMessage);
+            setTimeout(() => successMessage.remove(), 3000); // Xóa thông báo sau 3 giây
+        }
+        
+        // Hàm hiển thị thông báo lỗi
+        function displayErrorMessage(message) {
+            const errorMessage = document.createElement('div');
+            errorMessage.classList.add('error-message');
+            errorMessage.innerText = message;
+            document.body.appendChild(errorMessage);
+            setTimeout(() => errorMessage.remove(), 3000); // Xóa thông báo sau 3 giây
+        }
+        
+        // Hàm xóa các trường nhập động
+        function clearDynamicFields() {
+            document.querySelectorAll('.shoeSize').forEach(sizeDiv => sizeDiv.remove());
+            document.querySelectorAll('.shoeImage').forEach(imageDiv => imageDiv.remove());
+        }
+        
+    </script>
+</body>
+</html>

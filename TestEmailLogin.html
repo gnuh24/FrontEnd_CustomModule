@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .login-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .google-btn {
+            background-color: #db4437;
+            color: #fff;
+        }
+
+        .google-btn:hover {
+            background-color: #c33d2e;
+        }
+
+        .facebook-btn {
+            background-color: #3b5998;
+            color: #fff;
+        }
+
+        .facebook-btn:hover {
+            background-color: #334b88;
+        }
+
+        #userInfo {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+    </style>
+    <script>
+        function oauthLogin(provider) {
+            const oauthUrl = `http://localhost:8080/oauth2/authorization/${provider}`;
+            window.location.href = oauthUrl;
+        }
+
+        function getHomeInfo() {
+            fetch('http://localhost:8080/Auth/Google', {
+                method: 'GET',
+                credentials: 'include' // Điều này sẽ bao gồm cookie trong request
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received response:', data);
+                // Save JWT and Refresh Token
+                localStorage.setItem('jwtToken', data.token);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                // Display user info
+                displayUserInfo(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayUserInfo(data) {
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <p>Welcome, ${data.email}</p>
+                <p>Status: ${data.status}</p>
+                <p>Role: ${data.role}</p>
+                <p>Token Expiration: ${data.tokenExpirationTime}</p>
+                <p>Refresh Token Expiration: ${data.refreshTokenExpirationTime}</p>
+            `;
+        }
+
+        window.onload = function() {
+            // Attempt to get user info when the page loads
+            getHomeInfo();
+        };
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login Page</h1>
+        <button onclick="oauthLogin('google')" class="login-btn google-btn">Login with Google</button>
+        <button onclick="oauthLogin('facebook')" class="login-btn facebook-btn">Login with Facebook</button>
+        <div id="userInfo"></div>
+    </div>
+</body>
+</html>

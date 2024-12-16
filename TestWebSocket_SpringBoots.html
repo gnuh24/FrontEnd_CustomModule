@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manager Check-In Panel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h2>Staff Check-Ins</h2>
+    <div id="checkInList"></div>
+
+    <script type="text/javascript">
+        var stompClient = null;
+
+        // Connect to WebSocket
+        function connect() {
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+
+                // Subscribe to the topic to receive new check-ins
+                stompClient.subscribe('/topic/checkInUpdates', function (message) {
+                    updateCheckInList(JSON.parse(message.body));
+                });
+            });
+        }
+
+        // Update the check-in list on the UI
+        function updateCheckInList(checkIn) {
+            var checkInListDiv = document.getElementById("checkInList");
+            var checkInElement = document.createElement("div");
+            checkInElement.textContent = "Staff: " + checkIn.staffName + " - Check-in Time: " + checkIn.checkInTime;
+            checkInListDiv.appendChild(checkInElement);
+        }
+
+        // Connect to WebSocket on page load
+        connect();
+    </script>
+</body>
+</html>
