@@ -56,6 +56,24 @@
             background-color: #334b88;
         }
 
+        .twitter-btn {
+            background-color: #1da1f2;
+            color: #fff;
+        }
+
+        .twitter-btn:hover {
+            background-color: #1a91da;
+        }
+
+        .github-btn {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .github-btn:hover {
+            background-color: #242424;
+        }
+
         #userInfo {
             margin-top: 1rem;
             font-size: 1.2rem;
@@ -68,39 +86,6 @@
             const oauthUrl = `http://localhost:8080/oauth2/authorization/${provider}`;
             window.location.href = oauthUrl;
         }
-
-        function getHomeInfo() {
-            fetch('http://localhost:8080/Auth/Google', {
-                method: 'GET',
-                credentials: 'include' // Điều này sẽ bao gồm cookie trong request
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Received response:', data);
-                // Save JWT and Refresh Token
-                localStorage.setItem('jwtToken', data.token);
-                localStorage.setItem('refreshToken', data.refreshToken);
-                // Display user info
-                displayUserInfo(data);
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function displayUserInfo(data) {
-            const userInfoDiv = document.getElementById('userInfo');
-            userInfoDiv.innerHTML = `
-                <p>Welcome, ${data.email}</p>
-                <p>Status: ${data.status}</p>
-                <p>Role: ${data.role}</p>
-                <p>Token Expiration: ${data.tokenExpirationTime}</p>
-                <p>Refresh Token Expiration: ${data.refreshTokenExpirationTime}</p>
-            `;
-        }
-
-        window.onload = function() {
-            // Attempt to get user info when the page loads
-            getHomeInfo();
-        };
     </script>
 </head>
 <body>
@@ -108,6 +93,8 @@
         <h1>Login Page</h1>
         <button onclick="oauthLogin('google')" class="login-btn google-btn">Login with Google</button>
         <button onclick="oauthLogin('facebook')" class="login-btn facebook-btn">Login with Facebook</button>
+        <button onclick="oauthLogin('twitter')" class="login-btn twitter-btn">Login with Twitter</button>
+        <button onclick="oauthLogin('github')" class="login-btn github-btn">Login with GitHub</button>
         <div id="userInfo"></div>
     </div>
 </body>
