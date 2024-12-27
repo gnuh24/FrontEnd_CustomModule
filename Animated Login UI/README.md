@@ -11,3 +11,4 @@ Nhân vật sẽ che mắt lại khi ta nhập password
 
 Nhân vật sẽ hé mắt khi ta nhập password với chế độ show
 ![alt text](image-3.png)
+
